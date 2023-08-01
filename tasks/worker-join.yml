@@ -1,0 +1,16 @@
+- name: Set worker join command
+  set_fact:
+    worker_join_command: "{{ hostvars['swarm-master-1'].worker_join_command_raw.stdout_lines[2] }}"
+
+- name: Workers join cluster
+  block:
+    - name: Check if node is joined
+      shell: "docker info | egrep 'Swarm: ' | cut -d ' ' -f3"
+      register: swarm_mode
+      when: master_node not in ansible_all_ipv4_addresses
+    
+    - name: Join the swarm
+      shell: "{{ worker_join_command }}"
+      when:
+        - master_node not in ansible_all_ipv4_addresses
+        - swarm_mode.stdout != "active"

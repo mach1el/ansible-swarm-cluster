@@ -1,0 +1,10 @@
+- import_tasks: install-docker-deb.yml
+  when: ansible_os_family == 'Debian'
+
+- import_tasks: install-docker-ubuntu.yml
+  when: ansible_os_family == 'Ubuntu'
+
+- import_tasks: swarm-master.yml
+  when: master_node in ansible_all_ipv4_addresses
+
+- import_tasks: worker-join.yml

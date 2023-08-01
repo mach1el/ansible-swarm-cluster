@@ -1,0 +1,4 @@
+---
+
+docker_keyring_path: "/etc/apt/keyrings/docker.gpg"
+cluster_initialized: "/tmp/cluster_initialized.txt"
