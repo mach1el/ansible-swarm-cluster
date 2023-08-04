@@ -13,11 +13,18 @@
     update_cache: true
 
 - name: Add Docker's offical GPG key
-  shell: |
-    install -m 0755 -d /etc/apt/keyrings
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o {{ docker_keyring_path }}
-    chmod a+r {{ docker_keyring_path }}
-    exit
+  block:
+    - name: Check and remove if key existed
+      file:
+        path: "{{ docker_keyring_path }}"
+        state: absent
+
+    - name: Add GPG key
+      shell: |
+        install -m 0755 -d /etc/apt/keyrings
+        curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o {{ docker_keyring_path }}
+        chmod a+r {{ docker_keyring_path }}
+        exit
 
 - name: Setup repository
   shell: 'echo "deb [arch="$(dpkg --print-architecture)" signed-by={{ docker_keyring_path }}] https://download.docker.com/linux/ubuntu "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null'
